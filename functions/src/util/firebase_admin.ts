@@ -18,4 +18,4 @@ const app = initializeApp({
 export const auth = getAuth(app);
 
 const db = getDatabase(app);
-export const dbRef = db.ref().child('gates');
+export const dbRef = db.ref().child('schedules');

@@ -23,7 +23,7 @@ export default function useApp() {
 			shallow
 		);
 
-	// Validate if the user was auth
+	// Subscribe to validate if the user was auth
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
 			if (firebaseUser) {
@@ -35,7 +35,7 @@ export default function useApp() {
 			setIsAuth(Boolean(firebaseUser));
 			setUser(firebaseUser);
 			setVerifying(false);
-			setFirebaseGateReference(ref(db, 'gates'));
+			setFirebaseGateReference(ref(db, 'schedules'));
 		});
 
 		// Cleanup suscription
@@ -48,10 +48,10 @@ export default function useApp() {
 	// Use zustand to listen for the arrays changes
 	useEffect(() => {
 		if (!firebaseGatesReference) return;
-		const unsubscribe = onValue(ref(db, 'gates'), (snap) => {
+		const unsubscribe = onValue(ref(db, 'schedules'), (snap) => {
 			if (snap.exists()) {
 				const data = snap.val();
-				// console.log('data changes', data);
+				console.log('data changes', data);
 				setGates(data);
 			} else {
 				setGates([]);

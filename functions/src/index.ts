@@ -1,23 +1,16 @@
 import { https } from 'firebase-functions';
 import express from 'express';
 import cors from 'cors';
-import { isAuthMiddleware } from './middlewares/isAuth.middleware';
-import { reserve } from './controllers/gates.controller';
-import { createGates } from './seeders/gate';
+import gatesRouter from './routes/gates.router';
 
+// Create server
 const server = express();
+// Enable cors
 server.use(cors());
+// Enable json request
 server.use(express.json());
+// ROUTES
+server.use('/', gatesRouter);
 
-server.post('/reserve', isAuthMiddleware, async (req, res) => {
-	console.log('body', req.body);
-	await reserve();
-	res.send({ message: 'good' });
-});
-
-server.post('/seed', async (_, res) => {
-	await createGates();
-	res.send({ message: 'complete' });
-});
-
-export const app = https.onRequest(server);
+// Export to firebase HTTP SERVER
+export const api = https.onRequest(server);

@@ -30,3 +30,9 @@ export const isAuthMiddleware: RequestHandler = (req, res, next) => {
 		);
 	}
 };
+
+export const isAdminMiddleware: RequestHandler = (req, res, next) => {
+	isAuthMiddleware(req, res, next);
+	console.log('will check if this id is valid', req.uid);
+	next();
+};
