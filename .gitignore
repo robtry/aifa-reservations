@@ -33,6 +33,8 @@ package-lock.json
 firebase.json
 *rules.json
 .firebaserc
-backup
-lib
 permissions.json
+firestore.indexes.json
+firestore.rules
+lib
+bk

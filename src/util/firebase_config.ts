@@ -5,7 +5,11 @@ import {
 	connectAuthEmulator,
 	GoogleAuthProvider,
 } from 'firebase/auth';
-import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
+import {
+	connectFirestoreEmulator,
+	getFirestore,
+} from 'firebase/firestore';
+// import { getDatabase } from 'firebase/database';
 
 const firebaseConfig = {
 	apiKey: process.env.REACT_APP_APIKEY,
@@ -27,8 +31,11 @@ googleProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 // - Auth
 export const auth = getAuth(app);
 
-// NRT Database
-export const db = getDatabase();
+// - NRT Database
+// export const db = getDatabase(app);
+
+// - Firestore
+export const db = getFirestore(app);
 
 // Enable analytics
 if (process.env.NODE === 'production') {
@@ -37,7 +44,7 @@ if (process.env.NODE === 'production') {
 
 // Connect emulatos
 if (window.location.hostname === 'localhost') {
-	// Point to the RTDB emulator running on localhost.
 	connectAuthEmulator(auth, 'http://localhost:9099');
-	connectDatabaseEmulator(db, 'localhost', 9000);
+	connectFirestoreEmulator(db, 'localhost', 8080);
+	//connectDatabaseEmulator(db, 'localhost', 9000);
 }

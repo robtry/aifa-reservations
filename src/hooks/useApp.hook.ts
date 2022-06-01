@@ -1,5 +1,11 @@
 import { onAuthStateChanged } from 'firebase/auth';
-import { onValue, ref } from 'firebase/database';
+import {
+	doc,
+	getDoc,
+	getDocs,
+	onSnapshot,
+	collection,
+} from 'firebase/firestore';
 import { useEffect } from 'react';
 import shallow from 'zustand/shallow';
 import useGatesStore from '../store/gates.store';
@@ -35,7 +41,7 @@ export default function useApp() {
 			setIsAuth(Boolean(firebaseUser));
 			setUser(firebaseUser);
 			setVerifying(false);
-			setFirebaseGateReference(ref(db, 'schedules'));
+			setFirebaseGateReference(collection(db, 'schedules'));
 		});
 
 		// Cleanup suscription
@@ -48,16 +54,31 @@ export default function useApp() {
 	// Use zustand to listen for the arrays changes
 	useEffect(() => {
 		if (!firebaseGatesReference) return;
-		const unsubscribe = onValue(ref(db, 'schedules'), (snap) => {
-			if (snap.exists()) {
-				const data = snap.val();
-				console.log('data changes', data);
-				setGates(data);
-			} else {
-				setGates([]);
-			}
-		});
-		return () => unsubscribe();
+		// const unsubscribe = onSnapshot(doc(db, 'schedules', '6-1-2022'), (snap) => {
+		// 	if (snap.exists()) {
+		// 		const data = snap.data();
+		// 		console.log('data changes', data);
+		// 		setGates(data as Gate[]);
+		// 	} else {
+		// 		setGates([]);
+		// 	}
+		// });
+		// return () => unsubscribe();
+		console.log('hey you!');
+		// get a doc
+		getDoc(doc(db, 'schedules', '6-1-2022', '1654041600000', '502')).then(val => console.log(val.data()))
+		
+		// getDocsFromServer(collection(db, 'schedules', '6-1-2022', '1654041600000'))	
+		// .then((snapshot) => {
+		// 	console.log('snapshot size:', snapshot.size);
+		// 	snapshot.forEach((doc) => {
+		// 		console.log(`${doc.id} =>`);
+		// 		console.log(doc.data());
+		// 	});
+		// });
+
+
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [firebaseGatesReference]);
 

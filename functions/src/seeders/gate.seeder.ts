@@ -1,6 +1,6 @@
-import { dbRef } from '../util/firebase_admin';
+import { firestore, auth } from '../util/firebase_admin';
 
-const GATES = [
+export const GATES = [
 	'106',
 	'107',
 	'108',
@@ -20,34 +20,104 @@ const GATES = [
 	'505',
 ];
 
-const AIRLINES = [
+export const AIRLINES = [
 	'ADMIN',
 	'Aereomexico',
 	'Volaris',
 	'Vivaaereobus',
-	'Interjet'
-]
+	'Interjet',
+];
 
-export const createGates = async () => {
+// Wait function
+// const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// Seleccionar el rango de fechas
+export const initialDate = new Date('06/01/2022'); // June 6
+// export const endDate = new Date('12/31/2022'); // July 6
+export const endDate = new Date('06/02/2022'); // July 6
+
+// Seeder to populate db
+export const createGates = () => {
 	// Crear los horarios disponibles
-	return new Promise((resolve) => {
-		const db : { [key: string]: any } = {} ;
-		const gatesLen = GATES.length;
-		let gateValue: { [key: string]: any } = {};
-		let gateKey: { [key: string]: any } = {};
+	return new Promise(async (resolve, reject) => {
+		// Crear las objetos que alamacenaran la info
+		let counter = 0;
+		// Aereolineas
 		const airlinesLen = AIRLINES.length;
-		const initialDate = new Date('05/05/2021');
-		const endDate = new Date('05/15/2021');
-		//const endDate = new Date('01/02/2021');
-		for(let i = initialDate; i <= endDate; i.setHours(i.getHours() + 1)){
-			for(let j = 0; j < gatesLen; j++){
-				for(let k = 0; k < airlinesLen; k++){
-					gateValue[AIRLINES[k]] = 'none';
-				}
-				gateKey[GATES[j]] = gateValue;
-			}
-			db[i.getTime()] = { ...db[i.getTime()], ...gateKey};
+		const airlines: { [key: string]: any } = {};
+		// Gates
+		const gatesLen = GATES.length;
+		// 1 - Llenar la db
+		// Generar las combinaciones
+		for (let i = 0; i < airlinesLen; i++) {
+			airlines[AIRLINES[i]] = 'none';
 		}
-		dbRef.set(db).then(() => resolve('complete')).catch(console.log);
+		// Iterar sobre los dias
+		for (
+			let currentDay = initialDate;
+			currentDay <= endDate;
+			currentDay.setDate(currentDay.getDate() + 1)
+		) {
+			// Fin del día para iterar sobre las horas
+			let nextDay = new Date(currentDay);
+			nextDay.setDate(nextDay.getDate() + 1);
+			// Get the current key
+			const day = currentDay.toLocaleDateString().replace(/\//gi, '-');
+			// Iterar sobre las horas de los días
+			for (
+				let hours = new Date(currentDay);
+				hours <= nextDay;
+				hours.setHours(hours.getHours() + 1)
+			) {
+				for (let i = 0; i < gatesLen; i++) {
+					counter++;
+					console.log('current', counter, 'for', day, hours.getHours());
+					try {
+						const res = await firestore
+							.collection('schedules')
+							.doc(day)
+							.collection(hours.getTime().toString())
+							.doc(GATES[i])
+							.set({
+								// gate: GATES[gateIndex],
+								status: 'disponible',
+								reserver: null,
+							});
+						console.log('result', res.writeTime);
+						// await sleep(500);
+					} catch (e) {
+						reject(e);
+					}
+				}
+			}
+		}
+
+		// 2 - Crear usuarios
+		for (let i = 0; i < airlinesLen; i++) {
+			try {
+				const userRecord = await auth.createUser({
+					email: `${AIRLINES[i].toLocaleLowerCase()}@emial.com`,
+					emailVerified: true,
+					password: '123456',
+					displayName: AIRLINES[i],
+					disabled: false,
+				});
+				await firestore
+					.collection('users')
+					.doc(userRecord.uid)
+					.set({
+						role: AIRLINES[i] === 'ADMIN' ? 'admin' : 'airline',
+						name: AIRLINES[i],
+					});
+				console.log('Successfully created new user:', userRecord.uid);
+			} catch (error) {
+				console.log('Error creating new user:', error);
+			}
+		}
+
+		// 3 - Complete
+		resolve('complete');
 	});
 };
+
+(async () => await createGates())();

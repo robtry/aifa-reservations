@@ -1,10 +1,10 @@
-import { DatabaseReference } from 'firebase/database';
+import { CollectionReference } from 'firebase/firestore';
 import produce from 'immer';
 import create from 'zustand';
 
 interface GatesStore {
-	firebaseGatesReference: DatabaseReference | null;
-	setFirebaseGateReference: (ref: DatabaseReference) => void;
+	firebaseGatesReference: CollectionReference | null;
+	setFirebaseGateReference: (ref: CollectionReference) => void;
 	gates: Gate[];
 	setGates: (gates: Gate[]) => void;
 }

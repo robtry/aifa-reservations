@@ -1,29 +1,28 @@
 import { RequestHandler } from 'express';
 import { https } from 'firebase-functions/v1';
-import { auth } from '../util/firebase_admin';
+import { auth, usersReference } from '../util/firebase_admin';
 
+// Validate if user is auth
 export const isAuthMiddleware: RequestHandler = (req, res, next) => {
-	// console.log('header', req.headers)
 	if (req.headers.authorization) {
 		const token = req.headers.authorization.replace('Bearer ', '');
 		auth
 			.verifyIdToken(token)
 			.then(decodedToken => {
 				const uid = decodedToken.uid;
-				// console.log('decoded token', decodedToken);
-				// console.log('current user', uid);
+				// Attach uid to request
 				req.uid = uid;
 				next();
 			})
 			.catch(err => {
-				console.log('auth middwareError', err);
-				// res.status(403).send({ message: 'no joven' });
+				res.status(403).send({ message: 'The function must be called while authenticated.' });
 				throw new https.HttpsError(
 					'failed-precondition',
 					'The function must be called while authenticated.'
 				);
 			});
 	} else {
+		res.status(403).send({ message: 'The function must be called while authenticated.' });
 		throw new https.HttpsError(
 			'failed-precondition',
 			'The function must be called while authenticated.'
@@ -31,8 +30,24 @@ export const isAuthMiddleware: RequestHandler = (req, res, next) => {
 	}
 };
 
-export const isAdminMiddleware: RequestHandler = (req, res, next) => {
-	isAuthMiddleware(req, res, next);
-	console.log('will check if this id is valid', req.uid);
-	next();
+// Validate if the user is admin
+export const isAdminMiddleware: RequestHandler = async (req, res, next) => {
+	try {
+		isAuthMiddleware(req, res, next);
+		console.log('will check if this id is valid', req.uid);
+		const currentUser = await usersReference.doc(req.uid).get();
+		// Validate that exists
+		if (!currentUser.exists) {
+			return res.status(403).send({ message: 'The user does not exists' });
+		}
+		const doc = currentUser.data();
+		// Validate that is admin
+		if(doc!.role !== 'admin'){
+			return res.status(403).send({ message: 'The user must be admin' });
+		} 
+		return next();
+	} catch(e) {
+		console.error('admin auth failed', e);
+		return res.status(403).send({ message: 'The function must be called while authenticated as admin' });
+	}
 };
