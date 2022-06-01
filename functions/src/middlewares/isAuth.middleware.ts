@@ -15,14 +15,14 @@ export const isAuthMiddleware: RequestHandler = (req, res, next) => {
 				next();
 			})
 			.catch(err => {
-				res.status(403).send({ message: 'The function must be called while authenticated.' });
+				res.status(403).send({ message: 'The function must be called while authenticated.', details: err });
 				throw new https.HttpsError(
 					'failed-precondition',
 					'The function must be called while authenticated.'
 				);
 			});
 	} else {
-		res.status(403).send({ message: 'The function must be called while authenticated.' });
+		res.status(403).send({ message: 'No headers' });
 		throw new https.HttpsError(
 			'failed-precondition',
 			'The function must be called while authenticated.'
@@ -33,7 +33,6 @@ export const isAuthMiddleware: RequestHandler = (req, res, next) => {
 // Validate if the user is admin
 export const isAdminMiddleware: RequestHandler = async (req, res, next) => {
 	try {
-		isAuthMiddleware(req, res, next);
 		console.log('will check if this id is valid', req.uid);
 		const currentUser = await usersReference.doc(req.uid).get();
 		// Validate that exists
@@ -41,6 +40,7 @@ export const isAdminMiddleware: RequestHandler = async (req, res, next) => {
 			return res.status(403).send({ message: 'The user does not exists' });
 		}
 		const doc = currentUser.data();
+		// console.log('user info', doc);
 		// Validate that is admin
 		if(doc!.role !== 'admin'){
 			return res.status(403).send({ message: 'The user must be admin' });

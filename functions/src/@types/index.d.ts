@@ -1,4 +1,4 @@
 interface Gate {
-	name: string;
+	booker: string;
 	status: string;
 }

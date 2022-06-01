@@ -14,8 +14,13 @@ import { auth, db } from '../util/firebase_config';
 
 // Suscribe to changes from firebase
 export default function useApp() {
-	const [setIsAuth, setVerifying, setUser] = useUserStore(
-		(state) => [state.setIsAuth, state.setIsVerifying, state.setUser],
+	const [setIsAuth, setVerifying, setUser, setIsAdmin] = useUserStore(
+		(state) => [
+			state.setIsAuth,
+			state.setIsVerifying,
+			state.setUser,
+			state.setIsAdmin,
+		],
 		shallow
 	);
 
@@ -37,6 +42,7 @@ export default function useApp() {
 				// https://firebase.google.com/docs/reference/js/firebase.User
 				// const uid = user.uid;
 				console.log('user logged', firebaseUser);
+				setIsAdmin(firebaseUser.displayName === 'ADMIN');
 			}
 			setIsAuth(Boolean(firebaseUser));
 			setUser(firebaseUser);
@@ -51,36 +57,9 @@ export default function useApp() {
 
 	// TODO refresh auth token
 
-	// Use zustand to listen for the arrays changes
-	useEffect(() => {
-		if (!firebaseGatesReference) return;
-		// const unsubscribe = onSnapshot(doc(db, 'schedules', '6-1-2022'), (snap) => {
-		// 	if (snap.exists()) {
-		// 		const data = snap.data();
-		// 		console.log('data changes', data);
-		// 		setGates(data as Gate[]);
-		// 	} else {
-		// 		setGates([]);
-		// 	}
-		// });
-		// return () => unsubscribe();
-		console.log('hey you!');
-		// get a doc
-		getDoc(doc(db, 'schedules', '6-1-2022', '1654041600000', '502')).then(val => console.log(val.data()))
-		
-		// getDocsFromServer(collection(db, 'schedules', '6-1-2022', '1654041600000'))	
-		// .then((snapshot) => {
-		// 	console.log('snapshot size:', snapshot.size);
-		// 	snapshot.forEach((doc) => {
-		// 		console.log(`${doc.id} =>`);
-		// 		console.log(doc.data());
-		// 	});
-		// });
-
-
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [firebaseGatesReference]);
+	// getDoc(doc(db, 'schedules', '6-4-2022', '1654372800000', '106')).then(
+	// 	(val) => console.log(val.data())
+	// );
 
 	return {};
 }

@@ -33,8 +33,8 @@ export const AIRLINES = [
 
 // Seleccionar el rango de fechas
 export const initialDate = new Date('06/01/2022'); // June 6
-// export const endDate = new Date('12/31/2022'); // July 6
-export const endDate = new Date('06/02/2022'); // July 6
+export const endDate = new Date('12/31/2022'); // July 6
+// export const endDate = new Date('06/01/2022'); // July 6
 
 // Seeder to populate db
 export const createGates = () => {
@@ -80,8 +80,8 @@ export const createGates = () => {
 							.doc(GATES[i])
 							.set({
 								// gate: GATES[gateIndex],
-								status: 'disponible',
-								reserver: null,
+								status: 'available',
+								booker: null,
 							});
 						console.log('result', res.writeTime);
 						// await sleep(500);
@@ -91,33 +91,38 @@ export const createGates = () => {
 				}
 			}
 		}
-
-		// 2 - Crear usuarios
-		for (let i = 0; i < airlinesLen; i++) {
-			try {
-				const userRecord = await auth.createUser({
-					email: `${AIRLINES[i].toLocaleLowerCase()}@emial.com`,
-					emailVerified: true,
-					password: '123456',
-					displayName: AIRLINES[i],
-					disabled: false,
-				});
-				await firestore
-					.collection('users')
-					.doc(userRecord.uid)
-					.set({
-						role: AIRLINES[i] === 'ADMIN' ? 'admin' : 'airline',
-						name: AIRLINES[i],
-					});
-				console.log('Successfully created new user:', userRecord.uid);
-			} catch (error) {
-				console.log('Error creating new user:', error);
-			}
-		}
-
 		// 3 - Complete
 		resolve('complete');
 	});
 };
 
-(async () => await createGates())();
+export const createUsers = async () => {
+	// 2 - Crear usuarios
+	const airlinesLen = AIRLINES.length;
+	for (let i = 0; i < airlinesLen; i++) {
+		try {
+			const userRecord = await auth.createUser({
+				email: `${AIRLINES[i].toLocaleLowerCase()}@email.com`,
+				emailVerified: true,
+				password: '123456',
+				displayName: AIRLINES[i],
+				disabled: false,
+			});
+			await firestore
+				.collection('users')
+				.doc(userRecord.uid)
+				.set({
+					role: AIRLINES[i] === 'ADMIN' ? 'admin' : 'airline',
+					name: AIRLINES[i],
+				});
+			console.log('Successfully created new user:', userRecord.uid);
+		} catch (error) {
+			console.log('Error creating new user:', error);
+		}
+	}
+};
+
+// (async () => {
+	// await createUsers();
+	// await createGates();
+// })();

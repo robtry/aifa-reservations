@@ -38,3 +38,4 @@ firestore.indexes.json
 firestore.rules
 lib
 bk
+extensions
