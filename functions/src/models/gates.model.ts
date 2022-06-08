@@ -1,8 +1,14 @@
 import { DocumentReference } from 'firebase-admin/firestore';
+import MailService from '../services/Mailer.service';
 import { firestore } from '../util/firebase_admin';
 // import { AIRLINES } from '../seeders/gate.seeder';
 
 class GatesModel {
+	private mailer: MailService;
+
+	constructor() {
+		this.mailer = new MailService();
+	}
 	// Reservar por la aereolinea
 	public async book(airline: string, date: Date, gate: string) {
 		console.log(
@@ -68,6 +74,7 @@ class GatesModel {
 
 	// Aprobar, rechazar, bloquear por los admins
 	public async action(date: Date, gate: string, action: string) {
+		const dateTime = date.getTime().toString();
 		console.log(
 			'wil ' + action + ' in model',
 			'date',
@@ -82,13 +89,11 @@ class GatesModel {
 			.collection('schedules')
 			.doc(date.toLocaleDateString().replace(/\//gi, '-'));
 
-		const pendingRef = firestore
-			.collection('pending')
-			.doc(date.getTime().toString() + gate);
+		const pendingRef = firestore.collection('pending').doc(dateTime + gate);
 
 		const reservationsRef = firestore
 			.collection('reservations')
-			.doc(date.getTime().toString() + gate);
+			.doc(dateTime + gate);
 
 		switch (action) {
 			case 'approve':
@@ -100,6 +105,13 @@ class GatesModel {
 					gate,
 					'approve'
 				);
+				await this.notify(
+					`Reservación para ${gate} confirmada`,
+					`La solicitud de reservación para AIFA, ha sido confirmada.
+				Puerta: ${gate}.
+				Hora: ${date.toLocaleString('es')}
+				`
+				);
 				break;
 			case 'reject':
 				await this.approveRejectPendingGate(
@@ -110,6 +122,13 @@ class GatesModel {
 					gate,
 					'reject'
 				);
+				await this.notify(
+					`Reservación para ${gate} rechazada`,
+					`La solicitud de reservación para AIFA, ha sido confirmada.
+				Puerta: ${gate}.
+				Hora: ${date.toLocaleString('es')}
+				`
+				);
 				break;
 			case 'lock':
 				await this.lockGate(dbRef, reservationsRef, date, gate);
@@ -117,13 +136,11 @@ class GatesModel {
 			default:
 				console.log('Caso no manejado');
 		}
-
-		this.notify();
 	}
 
 	// Send notifications
-	private notify() {
-		console.log('will notify');
+	private async notify(subject: string, body: string) {
+		await this.mailer.sendApprovalMessage('gliphyhub@gmail.com', subject, body);
 	}
 
 	// Helper functions
@@ -177,7 +194,6 @@ class GatesModel {
 					date: dateTime,
 				});
 			}
-
 		});
 		console.log('Transaction success, confirmed!');
 	}
@@ -211,7 +227,7 @@ class GatesModel {
 					},
 				},
 			});
-			t.create(reservationsRef, { gate, date: dateTime, booker: 'admin' })
+			t.create(reservationsRef, { gate, date: dateTime, booker: 'admin' });
 		});
 		console.log('Transaction success, confirmed!');
 	}

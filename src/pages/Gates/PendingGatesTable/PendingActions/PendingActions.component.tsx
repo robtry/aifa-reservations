@@ -7,7 +7,7 @@ import {
 	DialogContentText,
 	DialogTitle,
 } from '@mui/material';
-import useAdminPedingActions from './useAdminPendingActions.hook';
+import useAdminPedingActions from './usePendingActions.hook';
 
 interface Props {
 	date: number;
@@ -41,7 +41,7 @@ export default function AdminPendingActions({ date, gate }: Props) {
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
-					{isLoading ? (
+					{!isLoading ? (
 						<Button
 							variant='contained'
 							onClick={() => handleContinueButton(date, gate)}
@@ -57,7 +57,7 @@ export default function AdminPendingActions({ date, gate }: Props) {
 						onClick={handleCancelButton}
 						variant='outlined'
 						color='error'
-						disabled={!isLoading}
+						disabled={isLoading}
 					>
 						Cancelar
 					</Button>

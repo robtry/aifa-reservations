@@ -40,7 +40,7 @@ export default function GatesAction({ isUsed, gate, hour }: Props) {
 				<DialogTitle>¿Esta seguro que desea continuar?</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
-						Confirmar la puerta {gate} para la{' '}
+						Confirmar la puerta {gate} para la fecha 
 						{new Date(parseInt(hour)).toLocaleString('es')}
 					</DialogContentText>
 				</DialogContent>

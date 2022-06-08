@@ -18,7 +18,7 @@ export default function useAdminPedingActions() {
 	// To open the modal
 	const [open, setOpen] = useState(false);
 	// Loading
-	const [isLoading, setIsLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(false);
 
 	// Reject gate
 	const handleReject = useCallback(() => {
@@ -40,7 +40,7 @@ export default function useAdminPedingActions() {
 	// Approve or Reject according to the action
 	const handleContinueButton = useCallback(
 		async (date: number, gate: string) => {
-				setIsLoading(true);
+			setIsLoading(true);
 			const body = {
 				date: new Date(date).getTime(),
 				gate,

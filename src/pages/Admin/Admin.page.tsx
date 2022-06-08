@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Box, Tab } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import NavBar from '../../components/NavBar';
-import AdminPending from './AdminPendingTable';
+import AdminPending from '../Gates/PendingGatesTable';
 import GatesPage from '../Gates';
 import ReservationsTable from '../Gates/ReservationsTable';
 

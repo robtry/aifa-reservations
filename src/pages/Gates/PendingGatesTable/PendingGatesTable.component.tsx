@@ -7,13 +7,19 @@ import {
 	TableHead,
 	TableRow,
 } from '@mui/material';
+import shallow from 'zustand/shallow';
+import useUserStore from '../../../store/user.store';
 import { AifaDateString } from '../../../util/dates.helper';
-import AdminPendingActions from './AdminPendingActions/';
-import useAdminPending from './useAdminPending.hook';
+import AdminPendingActions from './PendingActions';
+import usePensingGates from './usePendingGates.hook';
 
-export default function AdminPending() {
-	const { pendingGates } = useAdminPending();
+export default function PendingGatesTable() {
+	const [isAdmin] = useUserStore((state) => [state.isAdmin], shallow);
+	const { pendingGates } = usePensingGates();
 	// console.log('pending gates', pendingGates);
+	if (pendingGates.length === 0) {
+		return <h3>No hay reservaciones pendientes</h3>;
+	}
 	return (
 		<TableContainer component={Paper}>
 			<Table sx={{ minWidth: 650 }}>
@@ -22,9 +28,9 @@ export default function AdminPending() {
 						<TableCell>ID Reservación</TableCell>
 						<TableCell align='right'>Puerta</TableCell>
 						<TableCell align='right'>Fecha y Hora</TableCell>
-						<TableCell align='right'>Aereolinea</TableCell>
+						{isAdmin && <TableCell align='right'>Aereolinea</TableCell>}
 						<TableCell align='right'>Estatus</TableCell>
-						<TableCell align='right'>Acciones</TableCell>
+						{isAdmin && <TableCell align='right'>Acciones</TableCell>}
 					</TableRow>
 				</TableHead>
 				<TableBody>
@@ -45,13 +51,18 @@ export default function AdminPending() {
 								{AifaDateString(row.date)}
 							</TableCell>
 							{/* Aereolinea */}
-							<TableCell align='right'>{row.booker}</TableCell>
+							{isAdmin && <TableCell align='right'>{row.booker}</TableCell>}
 							{/* Estatus */}
-							<TableCell align='right'>PENDING</TableCell>
+							<TableCell align='right'>Pendiente</TableCell>
 							{/* Acciones */}
-							<TableCell align='right'>
-								<AdminPendingActions date={parseInt(row.date)} gate={row.gate} />
-							</TableCell>
+							{isAdmin && (
+								<TableCell align='right'>
+									<AdminPendingActions
+										date={parseInt(row.date)}
+										gate={row.gate}
+									/>
+								</TableCell>
+							)}
 						</TableRow>
 					))}
 				</TableBody>

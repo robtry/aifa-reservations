@@ -5,10 +5,8 @@ import {
 	connectAuthEmulator,
 	GoogleAuthProvider,
 } from 'firebase/auth';
-import {
-	connectFirestoreEmulator,
-	getFirestore,
-} from 'firebase/firestore';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+// import { getMessaging } from "firebase/messaging";
 // import { getDatabase } from 'firebase/database';
 
 const firebaseConfig = {
@@ -37,6 +35,9 @@ export const auth = getAuth(app);
 // - Firestore
 export const db = getFirestore(app);
 
+// Notifications
+// export const messaging = getMessaging(app);
+
 // Enable analytics
 if (process.env.NODE === 'production') {
 	getAnalytics(app);
@@ -44,6 +45,7 @@ if (process.env.NODE === 'production') {
 
 // Connect emulatos
 if (window.location.hostname === 'localhost') {
+	console.log('connected with emulators');
 	connectAuthEmulator(auth, 'http://localhost:9099');
 	connectFirestoreEmulator(db, 'localhost', 8080);
 	//connectDatabaseEmulator(db, 'localhost', 9000);

@@ -1,12 +1,22 @@
 import { useState, useEffect } from 'react';
-import { collection, query, onSnapshot } from 'firebase/firestore';
+import { collection, query, onSnapshot, where } from 'firebase/firestore';
 import { db } from '../../../util/firebase_config';
+import useUserStore from '../../../store/user.store';
+import shallow from 'zustand/shallow';
 
-export default function useAdminPending() {
+export default function usePendingGates() {
+	const [isAdmin, user] = useUserStore(
+		(state) => [state.isAdmin, state.user],
+		shallow
+	);
 	const [pendingGates, setPendingGates] = useState<PendingGates>([]);
 
 	useEffect(() => {
-		const q = query(collection(db, 'pending'));
+		const pendingRef = collection(db, 'pending');
+		const q = isAdmin
+			? query(pendingRef)
+			: query(pendingRef, where('booker', '==', user?.displayName));
+
 		const unsubscribe = onSnapshot(q, (querySnapshot) => {
 			const pending: PendingGates = [];
 			querySnapshot.forEach((doc) => {
@@ -17,9 +27,9 @@ export default function useAdminPending() {
 			setPendingGates(pending);
 		});
 		return () => unsubscribe();
-	}, []);
+	}, [isAdmin, user?.displayName]);
 
 	return {
-		pendingGates
-	}
+		pendingGates,
+	};
 }

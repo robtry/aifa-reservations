@@ -36,6 +36,7 @@ firebase.json
 permissions.json
 firestore.indexes.json
 firestore.rules
+.firebase
 lib
 bk
 extensions

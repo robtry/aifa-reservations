@@ -4,6 +4,7 @@ import { TabContext, TabList, TabPanel } from '@mui/lab';
 import NavBar from '../../components/NavBar';
 import GatesPage from '../Gates';
 import ReservationsTable from '../Gates/ReservationsTable';
+import PendingGatesTable from '../Gates/PendingGatesTable';
 
 export default function AdminPage() {
 	// Focus tab
@@ -27,7 +28,10 @@ export default function AdminPage() {
 						<GatesPage />
 					</TabPanel>
 					<TabPanel value='2'>
+						<h1>Reservaciones</h1>
 						<ReservationsTable />
+						<h1>Pendientes</h1>
+						<PendingGatesTable />
 					</TabPanel>
 				</TabContext>
 			</Box>
