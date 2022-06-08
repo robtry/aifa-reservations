@@ -211,7 +211,7 @@ class GatesModel {
 					},
 				},
 			});
-			t.create(reservationsRef, { gate, date: dateTime, booker: data[dateTime][gate].booker })
+			t.create(reservationsRef, { gate, date: dateTime, booker: 'admin' })
 		});
 		console.log('Transaction success, confirmed!');
 	}

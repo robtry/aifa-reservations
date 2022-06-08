@@ -1,14 +1,16 @@
 import axios from 'axios';
 import { useCallback, useState } from 'react';
 import shallow from 'zustand/shallow';
+import useHandleAxiosError from '../../../../hooks/useHandleAxiosError.hook';
 import useAppStore from '../../../../store/app.store';
 import useUserStore from '../../../../store/user.store';
 
-export default function useAdminPedingActions(gate: string, date: number) {
+export default function useAdminPedingActions() {
 	const [setNotification] = useAppStore(
 		(state) => [state.setNotification],
 		shallow
 	);
+	const { handler } = useHandleAxiosError();
 	// To get the current token
 	const [currentUser] = useUserStore((state) => [state.user], shallow);
 	// To identify the type of request
@@ -36,58 +38,41 @@ export default function useAdminPedingActions(gate: string, date: number) {
 	}, []);
 
 	// Approve or Reject according to the action
-	const handleContinueButton = useCallback(async () => {
-		const body = {
-			date: new Date(date).getTime(),
-			gate,
-			action,
-		};
-
-		try {
-			setIsLoading(true);
-			const res = await axios.post(
-				`${process.env.REACT_APP_API_URL}/gate`,
-				body,
-				{
-					headers: {
-						Authorization: (currentUser as any).accessToken,
-					},
-				}
-			);
-			console.log('axios response', res.data);
-			setNotification(
-				action === 'approve'
-					? 'Se aprovó correctamente'
-					: 'Se rechazó correctamente',
-				'success'
-			);
-		} catch (error) {
-			if (axios.isAxiosError(error)) {
-				if (error.response) {
-					// The request was made and the server responded with a status code
-					// that falls out of the range of 2xx
-					console.log(error.response.data);
-					// @ts-ignore
-					setNotification(error.response.data?.message as string, 'error');
-					console.log(error.response.status);
-					console.log(error.response.headers);
-				} else if (error.request) {
-					// The request was made but no response was received
-					// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-					// http.ClientRequest in node.js
-					console.log(error.request);
-				} else {
-					// Something happened in setting up the request that triggered an Error
-					console.log('Error', error.message);
-				}
-				console.log(error.config);
-			} else {
-				console.log('unexpexted error', error);
+	const handleContinueButton = useCallback(
+		async (date: number, gate: string) => {
+				setIsLoading(true);
+			const body = {
+				date: new Date(date).getTime(),
+				gate,
+				action,
+			};
+			// console.log('sending body', body, new Date(date).toDateString());
+			try {
+				const res = await axios.post(
+					`${process.env.REACT_APP_API_URL}/gate`,
+					body,
+					{
+						headers: {
+							Authorization: (currentUser as any).accessToken,
+						},
+					}
+				);
+				console.log('axios response', res.data);
+				setNotification(
+					action === 'approve'
+						? 'Se aprovó correctamente'
+						: 'Se rechazó correctamente',
+					'success'
+				);
+			} catch (error) {
+				handler(error);
+			} finally {
+				setOpen(false);
+				setIsLoading(false);
 			}
-		}
-		setIsLoading(false);
-		setOpen(false);
-	}, [gate, date, currentUser, action, setNotification]);
+		},
+		[action, currentUser, setNotification, handler]
+	);
 
 	return {
 		open,

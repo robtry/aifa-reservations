@@ -22,7 +22,7 @@ export default function AdminPendingActions({ date, gate }: Props) {
 		handleCancelButton,
 		handleContinueButton,
 		isLoading,
-	} = useAdminPedingActions(gate, date);
+	} = useAdminPedingActions();
 
 	return (
 		<div>
@@ -42,7 +42,12 @@ export default function AdminPendingActions({ date, gate }: Props) {
 				</DialogContent>
 				<DialogActions>
 					{isLoading ? (
-						<Button onClick={handleContinueButton}>Continuar</Button>
+						<Button
+							variant='contained'
+							onClick={() => handleContinueButton(date, gate)}
+						>
+							Continuar
+						</Button>
 					) : (
 						<LoadingButton loading variant='contained'>
 							Aceptar

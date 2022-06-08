@@ -7,6 +7,7 @@ import {
 	TableHead,
 	TableRow,
 } from '@mui/material';
+import { AifaDateString } from '../../../util/dates.helper';
 import AdminPendingActions from './AdminPendingActions/';
 import useAdminPending from './useAdminPending.hook';
 
@@ -40,7 +41,8 @@ export default function AdminPending() {
 							<TableCell align='right'>{row.gate}</TableCell>
 							{/* Fecha */}
 							<TableCell align='right'>
-								{new Date(parseInt(row.date)).toLocaleString('es')}
+								{/* {row.date} */}
+								{AifaDateString(row.date)}
 							</TableCell>
 							{/* Aereolinea */}
 							<TableCell align='right'>{row.booker}</TableCell>
@@ -48,7 +50,7 @@ export default function AdminPending() {
 							<TableCell align='right'>PENDING</TableCell>
 							{/* Acciones */}
 							<TableCell align='right'>
-								<AdminPendingActions date={parseInt(row.id)} gate={row.gate} />
+								<AdminPendingActions date={parseInt(row.date)} gate={row.gate} />
 							</TableCell>
 						</TableRow>
 					))}

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import useGatesStore from '../../../store/gates.store';
 import { db } from '../../../util/firebase_config';
@@ -6,14 +6,16 @@ import shallow from 'zustand/shallow';
 import useAppStore from '../../../store/app.store';
 
 export default function useGatesTable() {
-	const [queryDate, setSchedules] = useGatesStore(
-		(state) => [state.queryDate, state.setSchedule],
+	const [queryDate ] = useGatesStore(
+		(state) => [state.queryDate ],
 		shallow
 	);
 	const [setNotification] = useAppStore(
 		(state) => [state.setNotification],
 		shallow
 	);
+
+	const [schedules, setSchedules] = useState<null | Schedule>(null);
 
 	useEffect(() => {
 		if (!queryDate) return;
@@ -36,4 +38,8 @@ export default function useGatesTable() {
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [queryDate]);
+
+	return {
+		schedules
+	}
 }

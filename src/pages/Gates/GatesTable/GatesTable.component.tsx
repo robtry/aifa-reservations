@@ -7,14 +7,11 @@ import {
 	TableCell,
 	TableBody,
 } from '@mui/material';
-import shallow from 'zustand/shallow';
-import useGatesStore from '../../../store/gates.store';
 import GateTableRow from './GatesTableRow.component';
 import useGatesTable from './useGatesTable.hook';
 
 export default function GatesTable() {
-	const [schedules] = useGatesStore((state) => [state.schedules], shallow);
-	useGatesTable();
+	const { schedules } = useGatesTable();
 
 	return (
 		<TableContainer component={Paper}>

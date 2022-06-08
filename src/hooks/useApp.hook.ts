@@ -25,7 +25,7 @@ export default function useApp() {
 				// https://firebase.google.com/docs/reference/js/firebase.User
 				// const uid = user.uid;
 				console.log('user logged', firebaseUser);
-				setIsAdmin(firebaseUser.displayName === 'ADMIN');
+				setIsAdmin(firebaseUser.displayName === 'admin');
 			}
 			setIsAuth(Boolean(firebaseUser));
 			setUser(firebaseUser);

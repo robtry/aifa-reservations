@@ -6,8 +6,7 @@ import { auth } from '../../util/firebase_config';
 import useUserStore from '../../store/user.store';
 
 export default function NavBar() {
-
-	const [user] = useUserStore(state => [state.user], shallow);
+	const [user] = useUserStore((state) => [state.user], shallow);
 
 	const logOut = useCallback(() => {
 		signOut(auth);
@@ -17,7 +16,11 @@ export default function NavBar() {
 		<Box sx={{ flexGrow: 1 }}>
 			<AppBar position='static'>
 				<Toolbar>
-					<Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+					<Typography
+						variant='h6'
+						component='div'
+						sx={{ flexGrow: 1, textTransform: 'capitalize' }}
+					>
 						{user?.displayName}
 					</Typography>
 					<Button onClick={logOut} color='inherit'>

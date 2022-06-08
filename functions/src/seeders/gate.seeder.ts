@@ -32,8 +32,8 @@ export const AIRLINES = [
 // const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Seleccionar el rango de fechas
-//export const initialDate = new Date('06/01/2022'); // June 1
-export const initialDate = new Date(); // June 1
+export const initialDate = new Date('06/08/2022'); // June 1
+// export const initialDate = new Date(); // June 1
 export const endDate = new Date('07/01/2022'); // July 1
 
 // Seeder to populate db
@@ -98,7 +98,7 @@ export const createUsers = async () => {
 				email: `${AIRLINES[i].toLocaleLowerCase()}@email.com`,
 				emailVerified: true,
 				password: '123456',
-				displayName: AIRLINES[i],
+				displayName: AIRLINES[i].toLocaleLowerCase(),
 				disabled: false,
 			});
 			await firestore

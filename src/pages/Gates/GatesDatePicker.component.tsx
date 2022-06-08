@@ -6,25 +6,29 @@ import useGatesStore from '../../store/gates.store';
 import { DateTime } from 'luxon';
 
 export default function GatesDatePicker() {
-	const [setQueryDate] = useGatesStore((state) => [state.setQueryDate]);
-	const [localDate, setLocalDate] = useState<null | DateTime>(null);
+	const [setQueryDate, queryDate] = useGatesStore((state) => [
+		state.setQueryDate,
+		state.queryDate,
+	]);
+	const [localDate, setLocalDate] = useState<DateTime>(DateTime.now());
 	useEffect(() => {
-		if (!localDate) return;
 		setQueryDate(localDate.toMillis());
 	}, [localDate, setQueryDate]);
 	return (
-		<LocalizationProvider dateAdapter={AdapterLuxon}>
-			<Box sx={{margin: 3}}>
-			<DatePicker
-				renderInput={(props) => <TextField {...props} />}
-				label='Fecha'
-				value={localDate}
-				onChange={(newValue) => {
-					if (!newValue) return;
-					// console.log('new value', newValue);
-					setLocalDate(newValue);
-				}}
-			/>
+		<LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale={'es'}>
+			<Box sx={{ margin: 3 }}>
+				<DatePicker
+					renderInput={(props) => <TextField {...props} />}
+					label='Fecha'
+					value={DateTime.fromMillis(queryDate)}
+					onChange={(newValue) => {
+						if (!newValue) return;
+						// console.log('new value', newValue);
+						setLocalDate(newValue as any);
+					}}
+					minDate={DateTime.now() as any}
+					maxDate={DateTime.now().plus({ days: 15 })}
+				/>
 			</Box>
 		</LocalizationProvider>
 	);

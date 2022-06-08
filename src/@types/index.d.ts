@@ -3,7 +3,7 @@ interface Gate {
 	status: string;
 }
 
-type PendingGate = { booker: string; id: string; gate: string, date: string };
+type PendingGate = { booker: string; id: string; gate: string; date: string };
 type PendingGates = PendingGate[];
 
 interface ScheduleGate {
@@ -17,6 +17,11 @@ interface Schedule {
 	};
 }
 
-interface LocalSchedule {
-	
+interface Reservation {
+	booker: string;
+	date: number;
+	gate: string;
+	id: string;
 }
+
+type Reservations = Reservation[]

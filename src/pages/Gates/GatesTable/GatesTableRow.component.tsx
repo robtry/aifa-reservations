@@ -8,10 +8,11 @@ import {
 	Table,
 	IconButton,
 } from '@mui/material';
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect, useMemo } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import GatesAction from './GatesActions';
+import { AifaDateString } from '../../../util/dates.helper';
 
 interface Props {
 	hour: string;
@@ -39,20 +40,31 @@ const translateStatus = (estatus: string) => {
 };
 
 export default function GateTableRow({ hour, row }: Props) {
-	// console.log('hour', hour);
-	// console.log('row', row);
-
 	const [open, setOpen] = useState(false);
+	const [available, setAvailable] = useState(0);
+	const gates = useMemo(() => Object.keys(row), [row]);
+
+	// count available
+	useEffect(() => {
+		const counted = gates.reduce(
+			(prev, current) =>
+				row[current].status === 'available' ? prev + 1 : prev,
+			0
+		);
+		setAvailable(counted);
+	}, [gates, row]);
 
 	return (
 		<Fragment>
 			<TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
 				{/* Date */}
 				<TableCell component='th' scope='row'>
-					{new Date(parseInt(hour)).toLocaleString('es')}
+					{AifaDateString(hour)}
 				</TableCell>
 				{/* Availables */}
-				<TableCell>2/24</TableCell>
+				<TableCell>
+					{available}/{gates.length}
+				</TableCell>
 				{/* Show details */}
 				<TableCell>
 					<IconButton size='small' onClick={() => setOpen((prev) => !prev)}>
@@ -74,22 +86,26 @@ export default function GateTableRow({ hour, row }: Props) {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{Object.keys(row).map((gate) => (
-										<TableRow key={gate}>
-											<TableCell component='th' scope='row'>
-												{gate}
-											</TableCell>
-											<TableCell>{translateStatus(row[gate].status)}</TableCell>
-											<TableCell>{row[gate].booker || '---'}</TableCell>
-											<TableCell>
-												<GatesAction
-													isUsed={row[gate].status !== 'available'}
-													gate={gate}
-													hour={hour}
-												/>
-											</TableCell>
-										</TableRow>
-									))}
+									{gates.map((gate) => {
+										return (
+											<TableRow key={gate}>
+												<TableCell component='th' scope='row'>
+													{gate}
+												</TableCell>
+												<TableCell>
+													{translateStatus(row[gate].status)}
+												</TableCell>
+												<TableCell>{row[gate].booker || '---'}</TableCell>
+												<TableCell>
+													<GatesAction
+														isUsed={row[gate].status !== 'available'}
+														gate={gate}
+														hour={hour}
+													/>
+												</TableCell>
+											</TableRow>
+										);
+									})}
 								</TableBody>
 							</Table>
 						</Box>

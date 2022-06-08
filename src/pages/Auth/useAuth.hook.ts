@@ -15,8 +15,12 @@ export default function useAuth() {
 		ui.start('#firebaseui-auth-container', {
 			signInFlow: 'popup',
 			signInOptions: [
-				firebase.auth.EmailAuthProvider.PROVIDER_ID,
-				firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+				{
+					provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+					disableSignUp: { status: true },
+				},
+				// firebase.auth.EmailAuthProvider.PROVIDER_ID,
+				// firebase.auth.GoogleAuthProvider.PROVIDER_ID,
 			],
 			callbacks: {
 				signInSuccessWithAuthResult: function (authResult) {
