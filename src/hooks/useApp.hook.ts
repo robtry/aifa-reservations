@@ -1,16 +1,8 @@
 import { onAuthStateChanged } from 'firebase/auth';
-import {
-	doc,
-	getDoc,
-	getDocs,
-	onSnapshot,
-	collection,
-} from 'firebase/firestore';
 import { useEffect } from 'react';
 import shallow from 'zustand/shallow';
-import useGatesStore from '../store/gates.store';
 import useUserStore from '../store/user.store';
-import { auth, db } from '../util/firebase_config';
+import { auth } from '../util/firebase_config';
 
 // Suscribe to changes from firebase
 export default function useApp() {
@@ -24,15 +16,6 @@ export default function useApp() {
 		shallow
 	);
 
-	const [setFirebaseGateReference, firebaseGatesReference, setGates] =
-		useGatesStore(
-			(state) => [
-				state.setFirebaseGateReference,
-				state.firebaseGatesReference,
-				state.setGates,
-			],
-			shallow
-		);
 
 	// Subscribe to validate if the user was auth
 	useEffect(() => {
@@ -47,7 +30,6 @@ export default function useApp() {
 			setIsAuth(Boolean(firebaseUser));
 			setUser(firebaseUser);
 			setVerifying(false);
-			setFirebaseGateReference(collection(db, 'schedules'));
 		});
 
 		// Cleanup suscription
@@ -56,10 +38,6 @@ export default function useApp() {
 	}, []);
 
 	// TODO refresh auth token
-
-	// getDoc(doc(db, 'schedules', '6-4-2022', '1654372800000', '106')).then(
-	// 	(val) => console.log(val.data())
-	// );
 
 	return {};
 }

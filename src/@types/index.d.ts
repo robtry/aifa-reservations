@@ -3,5 +3,20 @@ interface Gate {
 	status: string;
 }
 
-type PendingGate = { date: number; booker: string; id: string; gate: string };
+type PendingGate = { booker: string; id: string; gate: string, date: string };
 type PendingGates = PendingGate[];
+
+interface ScheduleGate {
+	booker: string;
+	status: string;
+}
+
+interface Schedule {
+	[key: string]: {
+		[key: string]: ScheduleGate;
+	};
+}
+
+interface LocalSchedule {
+	
+}

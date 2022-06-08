@@ -24,7 +24,7 @@ console.log('firebase keys after', config());
 const app = initializeApp({
 	credential: cert(permissions as ServiceAccount),
 	databaseURL: 'https://aifa-2022-default-rtdb.firebaseio.com',
-	databaseAuthVariableOverride: { uid: 'main-server' }
+	// databaseAuthVariableOverride: { uid: 'main-server' }
 });
 
 // Auth

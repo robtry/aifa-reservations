@@ -1,27 +1,37 @@
-import { CollectionReference } from 'firebase/firestore';
 import produce from 'immer';
 import create from 'zustand';
 
 interface GatesStore {
-	firebaseGatesReference: CollectionReference | null;
-	setFirebaseGateReference: (ref: CollectionReference) => void;
-	gates: Gate[];
-	setGates: (gates: Gate[]) => void;
+	schedules: Schedule | null;
+	setSchedule: (schedules: Schedule) => void;
+	// Dates
+	queryDate: number | null;
+	setQueryDate: (date: number) => void;
+	// Hours
+	queryTime: number | null;
+	setQueryTime: (hour: number) => void;
 }
 
 const useGatesStore = create<GatesStore>((set) => ({
-	gates: [],
-	setGates: (gates) =>
+	queryDate: new Date().getTime(),
+	queryTime: null,
+	setQueryDate: (date) =>
 		set((state) =>
 			produce(state, (draft) => {
-				draft.gates = gates;
+				draft.queryDate = date;
 			})
 		),
-	firebaseGatesReference: null,
-	setFirebaseGateReference: (ref) =>
+	setQueryTime: (time) =>
 		set((state) =>
 			produce(state, (draft) => {
-				draft.firebaseGatesReference = ref;
+				draft.queryTime = time;
+			})
+		),
+	schedules: null,
+	setSchedule: (gates) =>
+		set((state) =>
+			produce(state, (draft) => {
+				draft.schedules = gates;
 			})
 		),
 }));

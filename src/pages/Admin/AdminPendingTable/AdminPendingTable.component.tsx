@@ -7,12 +7,12 @@ import {
 	TableHead,
 	TableRow,
 } from '@mui/material';
-import AdminPendingActions from './AdminPendingActions.component';
+import AdminPendingActions from './AdminPendingActions/';
 import useAdminPending from './useAdminPending.hook';
 
 export default function AdminPending() {
 	const { pendingGates } = useAdminPending();
-	console.log('pending gates', pendingGates);
+	// console.log('pending gates', pendingGates);
 	return (
 		<TableContainer component={Paper}>
 			<Table sx={{ minWidth: 650 }}>
@@ -40,7 +40,7 @@ export default function AdminPending() {
 							<TableCell align='right'>{row.gate}</TableCell>
 							{/* Fecha */}
 							<TableCell align='right'>
-								{new Date(row.date).toLocaleString('es')}
+								{new Date(parseInt(row.date)).toLocaleString('es')}
 							</TableCell>
 							{/* Aereolinea */}
 							<TableCell align='right'>{row.booker}</TableCell>
@@ -48,7 +48,7 @@ export default function AdminPending() {
 							<TableCell align='right'>PENDING</TableCell>
 							{/* Acciones */}
 							<TableCell align='right'>
-								<AdminPendingActions date={row.date} gate={row.gate} />
+								<AdminPendingActions date={parseInt(row.id)} gate={row.gate} />
 							</TableCell>
 						</TableRow>
 					))}

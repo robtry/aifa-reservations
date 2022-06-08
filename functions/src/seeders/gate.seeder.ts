@@ -32,25 +32,26 @@ export const AIRLINES = [
 // const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Seleccionar el rango de fechas
-export const initialDate = new Date('06/01/2022'); // June 6
-export const endDate = new Date('12/31/2022'); // July 6
-// export const endDate = new Date('06/01/2022'); // July 6
+//export const initialDate = new Date('06/01/2022'); // June 1
+export const initialDate = new Date(); // June 1
+export const endDate = new Date('07/01/2022'); // July 1
 
 // Seeder to populate db
 export const createGates = () => {
 	// Crear los horarios disponibles
 	return new Promise(async (resolve, reject) => {
 		// Crear las objetos que alamacenaran la info
+		let schedules: { [key: string]: any } = {};
 		let counter = 0;
-		// Aereolineas
-		const airlinesLen = AIRLINES.length;
-		const airlines: { [key: string]: any } = {};
 		// Gates
 		const gatesLen = GATES.length;
-		// 1 - Llenar la db
+		const gates: { [key: string]: any } = {};
 		// Generar las combinaciones
-		for (let i = 0; i < airlinesLen; i++) {
-			airlines[AIRLINES[i]] = 'none';
+		for (let i = 0; i < gatesLen; i++) {
+			gates[GATES[i]] = {
+				status: 'available',
+				booker: null,
+			};
 		}
 		// Iterar sobre los dias
 		for (
@@ -69,30 +70,22 @@ export const createGates = () => {
 				hours <= nextDay;
 				hours.setHours(hours.getHours() + 1)
 			) {
-				for (let i = 0; i < gatesLen; i++) {
-					counter++;
-					console.log('current', counter, 'for', day, hours.getHours());
-					try {
-						const res = await firestore
-							.collection('schedules')
-							.doc(day)
-							.collection(hours.getTime().toString())
-							.doc(GATES[i])
-							.set({
-								// gate: GATES[gateIndex],
-								status: 'available',
-								booker: null,
-							});
-						console.log('result', res.writeTime);
-						// await sleep(500);
-					} catch (e) {
-						reject(e);
-					}
-				}
+				counter++;
+				// console.log('current', counter, 'for', day, 'hour', hours.getHours());
+				schedules[hours.getTime()] = gates;
+			}
+			// console.log('schedule', schedules);
+			try {
+				const res = await firestore.collection('schedules').doc(day).set(schedules);
+				schedules = {};
+				console.log('result', res.writeTime);
+				// await sleep(500);
+			} catch (e) {
+				reject(e);
 			}
 		}
 		// 3 - Complete
-		resolve('complete');
+		resolve('complete, total: ' + counter);
 	});
 };
 
@@ -121,8 +114,3 @@ export const createUsers = async () => {
 		}
 	}
 };
-
-// (async () => {
-	// await createUsers();
-	// await createGates();
-// })();

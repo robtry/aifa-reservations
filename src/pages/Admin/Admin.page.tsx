@@ -1,16 +1,11 @@
+import { useState } from 'react';
 import { Box, Tab } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { useState } from 'react';
-import shallow from 'zustand/shallow';
 import NavBar from '../../components/NavBar';
-import useGatesStore from '../../store/gates.store';
-import AdminPending from './AdminPending';
+import AdminPending from './AdminPendingTable';
+import GatesPage from '../Gates';
 
 export default function AdminPage() {
-	// subscribe to gates
-	const [gates] = useGatesStore((state) => [state.gates], shallow);
-	// consle.log('current gates', gates);
-
 	// Focus tab
 	const [tab, setTab] = useState('1');
 	const handleTabChange = (_: React.SyntheticEvent, newValue: string) => {
@@ -24,14 +19,16 @@ export default function AdminPage() {
 				<TabContext value={tab}>
 					<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
 						<TabList onChange={handleTabChange}>
-							<Tab label='Pendientes' value='1' />
-							<Tab label='Puertas' value='2' />
+							<Tab label='Horarios' value='1' />
+							<Tab label='Pendientes' value='2' />
 						</TabList>
 					</Box>
 					<TabPanel value='1'>
+						<GatesPage />
+					</TabPanel>
+					<TabPanel value='2'>
 						<AdminPending />
 					</TabPanel>
-					<TabPanel value='2'>Item Two</TabPanel>
 				</TabContext>
 			</Box>
 		</>
