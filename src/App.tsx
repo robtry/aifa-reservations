@@ -7,6 +7,8 @@ import useUserStore from './store/user.store';
 import useApp from './hooks/useApp.hook';
 import Notifications from './components/Notifications';
 import AirlinePage from './pages/Airline';
+import { ThemeProvider } from '@emotion/react';
+import { adminTheme, airLineTheme } from './theme';
 
 function App() {
 	const [isAuth, isVerifying, isAdmin] = useUserStore(
@@ -24,13 +26,13 @@ function App() {
 	}
 
 	return (
-		<>
+		<ThemeProvider theme={isAdmin ? adminTheme : airLineTheme}>
 			<Notifications />
 			<Routes>
 				<Route path='/' element={isAdmin ? <AdminPage /> : <AirlinePage />} />
 				{/* <Route path='about' element={<About />} /> */}
 			</Routes>
-		</>
+		</ThemeProvider>
 	);
 }
 
